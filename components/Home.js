@@ -1,0 +1,275 @@
+import { View, Text, Pressable, StyleSheet, ScrollView, Image, FlatList, ImageBackground } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import colors from "../assets/colors/colors";
+import Ionicons from "@expo/vector-icons/Ionicons"
+import activitiesData from "../assets/data/activitiesData"
+import discoverData from "../assets/data/discoverData"
+import learnMoreData from "../assets/data/learnMoreData"
+import discoverCategories from "../assets/data/discoverCategories"
+import profile from "../assets/images/omakuva.jpg"
+import { getAuth } from "firebase/auth";
+
+
+
+const Home = ({navigation}) => {
+
+    const handleSignOut = () => {
+        getAuth()
+        .signOut()
+        .then(() => {
+          navigation.navigate("Login")
+          console.log("Logged out!")
+        })
+    }
+
+    const renderDiscoverItem = ({item}) => {
+        return(
+            <Pressable
+                onPress={() => navigation.navigate("Details", {
+                    item: item,
+                })
+                }>
+                <ImageBackground
+                    source={item.image}
+                    style={[styles.discoverItem, {marginLeft: item.id === "discover-1" ? 20 : 0}]}
+                    imageStyle={styles.discoverItemImage}>
+                    <Text style={styles.discoverItemTitle}>{item.title}</Text>
+                <View style={styles.discoverItemLocationWrapper}>
+                    <Ionicons name="location-sharp" size={18} color={colors.white}/>
+                    <Text style={styles.discoverItemLocationText}>{item.location}</Text>
+                </View>
+                </ImageBackground>
+            </Pressable>
+        )
+    }
+
+    const renderActivityItem = ({item}) => {
+        return(
+            <View style={[styles.activitiesItemWrapper, {marginLeft: item.id === "activities-1" ? 20 : 0}]}>
+                <Image source={item.image} style={styles.activitiesItemImage}/>
+                <Text style={styles.activitiesItemText}>{item.title}</Text>
+            </View>
+        )
+    }
+
+    const renderLearnMoreItem = ({item}) => {
+        return(
+            <ImageBackground
+                    source={item.image}
+                    style={[styles.learnMoreItem, {marginLeft: item.id === "learnMore-1" ? 20 : 0}]}
+                    imageStyle={styles.learnmoreItemImage}>
+                    <Text style={styles.learnMoreItemText}>{item.title}</Text>
+                </ImageBackground>
+        )
+    }
+    return(
+        <View style={styles.container}>
+            <ScrollView>
+
+                {/* Header */}
+                <SafeAreaView>
+                    <View style={styles.menuWrap}>
+                        <Ionicons name="menu-outline" size={32} color={colors.black} style={styles.menuIcon}/>
+                        <Image source={profile} style={styles.profileImage} />
+                    </View>
+                </SafeAreaView>
+
+                {/* Discover */}
+                <View style={styles.discoverWrapper}>
+                    <Text style={styles.discoverTitle}>Discover</Text>
+                    <View style={styles.discoverCategoriesWrapper}>
+                        <Text style={[styles.discoverCategoryText, {color: colors.orange}]}>All</Text>
+                        <Text style={styles.discoverCategoryText}>Destinations</Text>
+                        <Text style={styles.discoverCategoryText}>Cities</Text>
+                        <Text style={styles.discoverCategoryText}>Experiences</Text>
+                    </View>
+                    <View style={styles.discoverItemsWrapper}>
+                        <FlatList
+                            data={discoverData}
+                            renderItem={renderDiscoverItem}
+                            keyExtractor={(item) => item.id}
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                        />
+                    </View>
+                </View>
+
+                {/* Activities */}
+                <View style={styles.activitiesWrapper}>
+                    <Text style={styles.activitiesTitle}>Activities</Text>
+                    <View style={styles.activitiesItemsWrapper}>
+                    <FlatList
+                        data={activitiesData}
+                        renderItem={renderActivityItem}
+                        keyExtractor={(item) => item.id}
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                    />
+                    </View>
+                </View>
+
+                {/* Learn More */}
+                <View style={styles.learnMoreWrapper}>
+                    <Text style={styles.learnMoreTitle}>Learn More</Text>
+                    <View style={styles.learnMoreItemsWrapper}>
+                        <FlatList 
+                            data={learnMoreData}
+                            renderItem={renderLearnMoreItem}
+                            keyExtractor={(item) => item.id}
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                        />
+                    </View>
+                </View>
+                <View style={styles.signOutWrapper}>
+                    <Pressable onPress={() => handleSignOut()} style={styles.signOutButton}>
+                        <Text style={styles.signOutText}>Sign out</Text>
+                    </Pressable>
+                </View>
+            </ScrollView>
+        </View>
+
+    )
+}
+
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        color: colors.white
+    },
+    menuWrap: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginHorizontal: 20,
+        marginVertical: 20
+    },
+    menuIcon: {
+    },
+    profileImage: {
+        width: 52,
+        height: 52,
+        resizeMode: "contain",
+        borderRadius: 10
+    },
+    discoverWrapper: {
+        marginTop: 20
+    },
+    discoverTitle: {
+        marginHorizontal: 20,
+        fontFamily: "Lato-Bold",
+        fontSize: 32,
+        marginBottom: 20,
+    },
+    discoverCategoriesWrapper: {
+        marginHorizontal: 20,
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
+    discoverCategoryText: {
+        fontFamily: "Lato-Regular",
+        color: colors.gray,
+        fontSize: 16
+    },
+    discoverItemsWrapper: {
+        paddingVertical: 20
+    },
+    discoverItem: {
+        width: 170,
+        height: 250,
+        justifyContent: "flex-end",
+        paddingHorizontal: 10,
+        paddingVertical: 20,
+        marginRight: 20
+    },
+    discoverItemImage: {
+        borderRadius: 20,
+    },
+    discoverItemTitle: {
+        fontFamily: "Lato-Bold",
+        fontSize: 18,
+        color: colors.white
+    },
+    discoverItemLocationWrapper: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginTop: 5
+    },
+    discoverItemLocationText: {
+        marginLeft: 5,
+        fontFamily: "Lato-Bold",
+        fontSize: 14,
+        color: colors.white
+    },
+    activitiesWrapper:{
+        marginTop: 10,
+    },
+    activitiesTitle:{
+        marginHorizontal: 20,
+        fontFamily: "Lato-Bold",
+        fontSize: 24,
+        color: colors.black
+    },
+    activitiesItemsWrapper: {
+        paddingVertical: 20
+    },
+    activitiesItemWrapper:{
+        justifyContent: "flex-end",
+        alignItems: "center",
+        marginRight: 20
+    },
+    activitiesItemImage:{
+        width: 36
+    },
+    activitiesItemText:{
+        marginTop: 5,
+        fontFamily: "Lato-Bold",
+        fontSize: 14,
+        color: colors.gray
+    },
+    learnMoreWrapper: {
+        marginTop: 10
+    },
+    learnMoreTitle: {
+        marginHorizontal: 20,
+        fontFamily: "Lato-Bold",
+        fontSize: 24,
+        color: colors.black
+    },
+    learnMoreItemsWrapper: {
+        paddingVertical: 20
+    },
+    learnMoreItem: {
+        width: 170,
+        height: 180,
+        justifyContent: "flex-end",
+        marginRight: 20
+    },
+    learnmoreItemImage: {
+        borderRadius: 20
+    },
+    learnMoreItemText: {
+        fontFamily: "Lato-Bold",
+        fontSize: 18,
+        color: colors.white,
+        marginHorizontal: 10,
+        marginVertical: 20
+    },
+    signOutWrapper: {
+        alignItems: "center",
+        marginTop: 20
+    },
+    signOutButton: {
+        paddingVertical: 20,
+        paddingHorizontal: 100,
+        backgroundColor: colors.orange,
+        borderRadius: 20
+    },
+    signOutText: {
+        color: colors.white,
+        fontFamily: "Lato-Regular",
+        fontSize: 16
+    }
+})
+export default Home
